@@ -26,7 +26,7 @@ namespace DontShrinkTests
         }
 
         [Test]
-        public void ArbFrom_WillShrinkUsingTheDefaultShrinkerForTheGivenType()
+        public void ArbFrom_UsesTheDefaultShrinkerForTheGivenType_WillShrink()
         {
             var arb = Arb.from<IList<int>>();
             var body = FSharpFunc<IList<int>, bool>.FromConverter(PropertyImplementation);
@@ -35,7 +35,16 @@ namespace DontShrinkTests
         }
 
         [Test]
-        public void ArbFromGen_WillNotShrinkDueToTheDefaultShrinkerThatReturnsAnEmptySequence()
+        public void ArbFrom_WhenExplicitlyToldToUseTheDontShrinkWrapper_WillNotShrink()
+        {
+            var arb = Arb.from<DontShrink<IList<int>>>();
+            var body = FSharpFunc<DontShrink<IList<int>>, bool>.FromConverter(xs => PropertyImplementation(xs.Item));
+            var property = Prop.forAll(arb, body);
+            Check.One(Config, property);
+        }
+
+        [Test]
+        public void ArbFromGen_UsesTheDefaultShrinkerThatReturnsAnEmptySequence_WillNotShrink()
         {
             var gen = Arb.generate<IList<int>>();
             var arb = Arb.fromGen(gen);
@@ -45,7 +54,7 @@ namespace DontShrinkTests
         }
 
         [Test]
-        public void SpecFor_WillShrinkUsingTheDefaultShrinkerForTheGivenType()
+        public void SpecFor_UsesTheDefaultShrinkerForTheGivenType_WillShrink()
         {
             Spec
                 .For(Any.OfType<IList<int>>(), xs => PropertyImplementation(xs))
@@ -53,7 +62,15 @@ namespace DontShrinkTests
         }
 
         [Test]
-        public void SpecFor_CanBeForcedToNotShrink()
+        public void SpecFor_WhenExplicitlyToldToUseTheDontShrinkWrapper_WillNotShrink()
+        {
+            Spec
+                .For(Any.OfType<DontShrink<IList<int>>>(), xs => PropertyImplementation(xs.Item))
+                .Check(Configuration);
+        }
+
+        [Test]
+        public void SpecFor_GivenShrinkClauseThatReturnsEmptySequence_WillNotShrink()
         {
             Spec
                 .For(Any.OfType<IList<int>>(), xs => PropertyImplementation(xs))
@@ -62,7 +79,7 @@ namespace DontShrinkTests
         }
 
         [FsCheck.NUnit.Property]
-        public Property PropertyWithRegularParam_WillShrinkUsingTheDefaultShrinkerForTheGivenType(IList<int> xsParam)
+        public Property Property_WithRegularParam_WillShrink(IList<int> xsParam)
         {
             return Spec
                 .For(Any.Value(xsParam), xs => PropertyImplementation(xs))
@@ -70,7 +87,7 @@ namespace DontShrinkTests
         }
 
         [FsCheck.NUnit.Property]
-        public Property PropertyWithExplicitDontShrinkParam_WillNotShrink(DontShrink<IList<int>> xsParam)
+        public Property Property_WhenParamIsWrappedInDontShrink_WillNotShrink(DontShrink<IList<int>> xsParam)
         {
             return Spec
                 .For(Any.Value(xsParam), xs => PropertyImplementation(xs.Item))

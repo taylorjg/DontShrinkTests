@@ -1,4 +1,10 @@
 
+## Turning off shrinking
+
+When a property fails, FsCheck normally tries to shrink the failing value in order to report the simplest
+possible value that still fails. However, sometimes it can be desirable not to automatically apply shrinking.
+There is a type in FsCheck called <code>DontShrink&lt;a&gt;</code>. I have only recently figured out how to use it! 
+
 ## The Common Property Implementation
 
 To demonstrate shrinking/not shrinking, we will use a test property that contains a deliberate error: 
@@ -71,7 +77,7 @@ seq [1; 0]
 
 ## Without Shrinking
 
-In this second test, I have explicitly used a type of <code>DontShrink<IList<int>></code> instead of <code>IList<int></code>. 
+In this second test, I have explicitly used a type of <code>DontShrink&lt;IList&lt;int&gt;&gt;</code> instead of <code>IList&lt;int&gt;</code>. 
 
 ```C#
 [Test]

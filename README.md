@@ -5,7 +5,7 @@ When a property fails, FsCheck normally tries to shrink the failing value in ord
 possible value that still fails. However, sometimes it can be desirable not to automatically apply shrinking.
 There is a type in FsCheck called <code>DontShrink&lt;a&gt;</code>. I have only recently figured out how to use it! 
 
-## The Common Property Implementation
+## The Method Under Test
 
 To demonstrate shrinking/not shrinking, we will use a test property that contains a deliberate error: 
 
@@ -101,3 +101,7 @@ DontShrink (seq [20; -18; -20; -9; ...])
    at FsCheck.Runner.check(Config config, a p) in C:\Users\Kurt\Projects\FsCheck\fsharp\src\FsCheck\Runner.fs: line 264
    at DontShrinkTests.DontShrinkTests.SpecFor_WhenExplicitlyToldToUseTheDontShrinkWrapper_WillNotShrink() in DontShrinkTests.cs: line 67
 ```
+
+## Other ways to prevent shrinking
+
+The code in this solution shows some other ways to prevent shrinking.
